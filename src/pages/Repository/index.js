@@ -4,7 +4,7 @@ import React from 'react';
 
 /**
  * Repository Function
- * @return {html}
+ * @return {html} Repository Page
  */
 export default function Repository() {
   return <h1>Repository</h1>;

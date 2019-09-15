@@ -4,7 +4,7 @@ import React from 'react';
 
 /**
  * Main function
- * @return {html}
+ * @return {html} Main page
  */
 export default function Main() {
   return <h1>Main</h1>;
