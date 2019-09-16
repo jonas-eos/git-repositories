@@ -12,8 +12,7 @@ import styled from 'styled-components';
  */
 export const Title = styled.h1`
   font-size: 24px;
-  color: ${props => (props.error ? 'blue' : '#ff6e22')};
-  font-family: Arial, Helvetica, sans-serif;
+  color: ${props => (props.error ? 'blue' : '#fff')};
 
   /* Style to small tag  */
   small {

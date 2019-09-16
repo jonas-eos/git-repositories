@@ -11,7 +11,7 @@ export default function Main() {
     <>
       <Title>
         Main
-        <small>Menor</small>
+        <small>Small</small>
       </Title>
       <Title error>Error</Title>
     </>
