@@ -27,6 +27,7 @@ export default createGlobalStyle`
   }
 
   button{
+    background: #FFB48F;
     cursor: pointer
   }
 `;
