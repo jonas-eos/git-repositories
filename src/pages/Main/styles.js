@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { keyframes, css } from 'styled-components';
 
 /**
  * @constant Container
@@ -50,14 +50,33 @@ export const Form = styled.form`
 `;
 
 /**
+ * A trigger to rotate the loading icon, this cause an effect like loading
+ * circle.
+ *
+ * @constant rotate
+ *
+ * @type {keyframes}
+ */
+const rotate = keyframes`
+  from{
+    transform: rotate(0deg);
+  }
+  to{
+    transform: rotate(360deg);
+  }
+  `;
+
+/**
  * @constant SubmitButton
  *
  * @type {button:submit}
+ * @type {disabled} props.loading
  * @return {style} css
  */
-export const SubmitButton = styled.button.attrs({
+export const SubmitButton = styled.button.attrs(props => ({
   type: 'submit',
-})`
+  disabled: props.loading,
+}))`
   border: 0;
   padding: 0 15px;
   margin-left: 10px;
@@ -66,4 +85,24 @@ export const SubmitButton = styled.button.attrs({
   display: flex;
   justify-content: center;
   align-items: center;
+
+  /**
+  * If the button are disabled, change cursor access permission and change
+  * button status as a disabled color opacity
+  */
+  &[disabled] {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  /* Check if the button are on loading status and activate rotate event on
+  * icon
+  */
+  ${props =>
+    props.loading &&
+    css`
+      svg {
+        animation: ${rotate} 2s linear infinite;
+      }
+    `}
 `;
