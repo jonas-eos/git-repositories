@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 
 import { FaGithubAlt, FaPlus, FaSpinner } from 'react-icons/fa';
 import { Container, Form, SubmitButton, List } from './styles';
@@ -20,6 +21,30 @@ export default class Main extends Component {
       repositories: [],
       loading: false,
     };
+  }
+
+  /**
+   * Load data from localStorage and show in webpage
+   */
+  componentDidMount() {
+    const repositories = localStorage.getItem('repositories');
+
+    if (repositories) {
+      this.setState({ repositories: JSON.parse(repositories) });
+    }
+  }
+
+  /**
+   * Save to the localStorage a the repositry sended via input.
+   *
+   * @param {object} prevState.repositories
+   */
+  componentDidUpdate(_, prevState) {
+    const { repositories } = this.state;
+
+    if (prevState.repositories !== repositories) {
+      localStorage.setItem('repositories', JSON.stringify(repositories));
+    }
   }
 
   /**
@@ -94,7 +119,9 @@ export default class Main extends Component {
           {repositories.map(repository => (
             <li key={repository.name}>
               <span>{repository.name}</span>
-              <a href="http://">Details</a>
+              <Link to={`/repository/${encodeURIComponent(repository.name)}`}>
+                Details
+              </Link>
             </li>
           ))}
         </List>
