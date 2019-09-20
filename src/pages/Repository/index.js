@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
-import api from '../../services/api';
+import { Link } from 'react-router-dom';
 
-// import { Container } from './styles';
+import PropTypes from 'prop-types';
+import Container from '../../components/Container';
+import { Loading, Owner } from './styles';
+import api from '../../services/api';
 
 /**
  * Class representating the repository page
@@ -30,6 +33,7 @@ export default class Repository extends Component {
 
     const repoName = decodeURIComponent(match.params.repository);
 
+    // Get API datas with primise.all
     const [repository, issues] = await Promise.all([
       api.get(`/repos/${repoName}`),
       api.get(`/repos/${repoName}`, {
@@ -49,11 +53,35 @@ export default class Repository extends Component {
 
   /**
    * Render to HTML
+   * As return, show the Owner Avatar img
+   * The repository name
+   * The repository description
    * @return {html}
    */
   render() {
     const { repository, issues, loading } = this.state;
 
-    return <h1>Repository</h1>;
+    if (loading) {
+      return <Loading>Loading</Loading>;
+    }
+
+    return (
+      <Container>
+        <Owner>
+          <Link to="/">Back to repositories</Link>
+          <img src={repository.owner.avatar_url} alt={repository.owner.login} />
+          <h1>{repository.name}</h1>
+          <p>{repository.description}</p>
+        </Owner>
+      </Container>
+    );
   }
 }
+
+Repository.propTypes = {
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      repository: PropTypes.string,
+    }),
+  }).isRequired,
+};
