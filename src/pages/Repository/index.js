@@ -33,7 +33,7 @@ export default class Repository extends Component {
 
     const repoName = decodeURIComponent(match.params.repository);
 
-    // Get API datas with primise.all
+    // Get API datas with promise.all
     const [repository, issues] = await Promise.all([
       api.get(`/repos/${repoName}`),
       api.get(`/repos/${repoName}/issues`, {
@@ -66,6 +66,7 @@ export default class Repository extends Component {
     }
 
     return (
+      // Show Owner information
       <Container>
         <Owner>
           <Link to="/">Back to repositories</Link>
@@ -74,6 +75,7 @@ export default class Repository extends Component {
           <p>{repository.description}</p>
         </Owner>
 
+        {/* Show issues list */}
         <IssueList>
           {issues.map(issue => (
             <li key={String(issue.id)}>
