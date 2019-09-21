@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 import api from '../../services/api';
 import Container from '../../components/Container';
-import { Loading, Owner, IssueList } from './styles';
+import { Loading, Owner, IssueList, IssueFilter } from './styles';
 
 /**
  * Class representating the repository page
@@ -21,6 +21,11 @@ export default class Repository extends Component {
       repository: {},
       issues: [],
       loading: true,
+      filters: [
+        { state: 'all', label: 'All', active: true },
+        { state: 'open', label: 'Open', active: false },
+        { state: 'closed', label: 'Closed', active: false },
+      ],
     };
   }
 
@@ -52,6 +57,31 @@ export default class Repository extends Component {
   }
 
   /**
+   * Show first 5 issues with filter option passed as param
+   *
+   * @param {String} filter
+   */
+  loadIssues = async filter => {
+    const { match } = this.props;
+    const repoName = decodeURIComponent(match.params.repository);
+    const response = await api.get(`/repos/${repoName}/issues`, {
+      params: {
+        state: String(filter),
+        per_page: 5,
+      },
+    });
+    this.setState({ issues: response.data });
+  };
+
+  /**
+   * On select change, call loadIssues passing the option target value
+   * @param {HTMLelement} e
+   */
+  handleSelectChange = e => {
+    this.loadIssues(`${e.target.value}`);
+  };
+
+  /**
    * Render to HTML
    * As return, show the Owner Avatar img
    * The repository name
@@ -59,7 +89,7 @@ export default class Repository extends Component {
    * @return {html}
    */
   render() {
-    const { repository, issues, loading } = this.state;
+    const { repository, issues, loading, filters } = this.state;
 
     if (loading) {
       return <Loading>Loading</Loading>;
@@ -77,6 +107,11 @@ export default class Repository extends Component {
 
         {/* Show issues list */}
         <IssueList>
+          <IssueFilter onChange={this.handleSelectChange}>
+            {filters.map(filter => (
+              <option value={String(filter.state)}>{filter.label}</option>
+            ))}
+          </IssueFilter>
           {issues.map(issue => (
             <li key={String(issue.id)}>
               <img src={issue.user.avatar_url} alt={issue.user.login} />

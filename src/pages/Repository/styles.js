@@ -119,3 +119,4 @@ export const IssueList = styled.ul`
     } /* p */
   } /*  li */
 `;
+export const IssueFilter = styled.select``;
