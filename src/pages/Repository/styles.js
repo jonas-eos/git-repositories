@@ -119,4 +119,33 @@ export const IssueList = styled.ul`
     } /* p */
   } /*  li */
 `;
-export const IssueFilter = styled.select``;
+
+export const IssueFilter = styled.select`
+  display: flex;
+  justify-content: center;
+  padding-bottom: 5px;
+  width: 30%;
+`;
+
+export const PageControl = styled.div`
+  padding-top: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 600;
+  button {
+    color: white;
+    font-size: 14px;
+    transition: opacity 0.3s step-end;
+    border-radius: 6px;
+    outline: 0;
+    border: 0;
+    padding: 12px;
+    &:disabled {
+      opacity: 0.15;
+      background: red;
+      cursor: not-allowed;
+    }
+  }
+`;

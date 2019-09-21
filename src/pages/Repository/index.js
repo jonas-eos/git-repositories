@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 import api from '../../services/api';
 import Container from '../../components/Container';
-import { Loading, Owner, IssueList, IssueFilter } from './styles';
+import { Loading, Owner, IssueList, IssueFilter, PageControl } from './styles';
 
 /**
  * Class representating the repository page
@@ -26,6 +26,8 @@ export default class Repository extends Component {
         { state: 'open', label: 'Open', active: false },
         { state: 'closed', label: 'Closed', active: false },
       ],
+      filter: 'all',
+      page: 1,
     };
   }
 
@@ -37,14 +39,16 @@ export default class Repository extends Component {
     const { match } = this.props;
 
     const repoName = decodeURIComponent(match.params.repository);
+    const { page, filter } = this.state;
 
     // Get API datas with promise.all
     const [repository, issues] = await Promise.all([
       api.get(`/repos/${repoName}`),
       api.get(`/repos/${repoName}/issues`, {
         params: {
-          state: 'open',
+          state: filter,
           per_page: 5,
+          page,
         },
       }),
     ]);
@@ -61,13 +65,15 @@ export default class Repository extends Component {
    *
    * @param {String} filter
    */
-  loadIssues = async filter => {
+  loadIssues = async () => {
     const { match } = this.props;
     const repoName = decodeURIComponent(match.params.repository);
+    const { page, filter } = this.state;
     const response = await api.get(`/repos/${repoName}/issues`, {
       params: {
-        state: String(filter),
+        state: filter,
         per_page: 5,
+        page,
       },
     });
     this.setState({ issues: response.data });
@@ -77,8 +83,20 @@ export default class Repository extends Component {
    * On select change, call loadIssues passing the option target value
    * @param {HTMLelement} e
    */
-  handleSelectChange = e => {
-    this.loadIssues(`${e.target.value}`);
+  handleSelectChange = async e => {
+    await this.setState({ filter: String(e.target.value) });
+    this.loadIssues();
+  };
+
+  /**
+   * On page action click, change to next or prev page.
+   * @param {HTMLelement} e
+   */
+  handlePage = async e => {
+    const { page } = this.state;
+    const { value: action } = e.target;
+    await this.setState({ page: action === 'next' ? page + 1 : page - 1 });
+    this.loadIssues();
   };
 
   /**
@@ -89,7 +107,7 @@ export default class Repository extends Component {
    * @return {html}
    */
   render() {
-    const { repository, issues, loading, filters } = this.state;
+    const { repository, issues, loading, filters, page } = this.state;
 
     if (loading) {
       return <Loading>Loading</Loading>;
@@ -127,6 +145,20 @@ export default class Repository extends Component {
             </li>
           ))}
         </IssueList>
+        <PageControl>
+          <button
+            type="button"
+            value="prev"
+            disabled={page < 2}
+            onClick={this.handlePage}
+          >
+            Previous
+          </button>
+          <span>Page {page}</span>
+          <button type="button" value="next" onClick={this.handlePage}>
+            Next
+          </button>
+        </PageControl>
       </Container>
     );
   }
