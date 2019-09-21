@@ -21,6 +21,7 @@ export default class Main extends Component {
       newRepo: '',
       repositories: [],
       loading: false,
+      error: null,
     };
   }
 
@@ -53,7 +54,7 @@ export default class Main extends Component {
    * @param {event} e
    */
   handleInputChange = e => {
-    this.setState({ newRepo: e.target.value });
+    this.setState({ newRepo: e.target.value, error: null });
   };
 
   /**
@@ -65,21 +66,29 @@ export default class Main extends Component {
   handleSubmit = async e => {
     e.preventDefault();
 
-    this.setState({ loading: true });
+    this.setState({ loading: true, error: false });
 
-    const { newRepo, repositories } = this.state;
+    try {
+      const { newRepo, repositories } = this.state;
 
-    const response = await api.get(`/repos/${newRepo}`);
+      const response = await api.get(`/repos/${newRepo}`);
 
-    const data = {
-      name: response.data.full_name,
-    };
+      const data = {
+        name: response.data.full_name,
+      };
 
-    this.setState({
-      repositories: [...repositories, data],
-      newRepo: '',
-      loading: false,
-    });
+      this.setState({
+        repositories: [...repositories, data],
+      });
+    } catch (error) {
+      this.setState({ error: true });
+      alert(error); // eslint-disable-line no-alert
+    } finally {
+      this.setState({
+        newRepo: '',
+        loading: false,
+      });
+    }
   };
 
   /**
@@ -87,7 +96,7 @@ export default class Main extends Component {
    * @return {html}
    */
   render() {
-    const { newRepo, repositories, loading } = this.state;
+    const { newRepo, repositories, loading, error } = this.state;
 
     return (
       <Container>
@@ -97,7 +106,7 @@ export default class Main extends Component {
         </h1>
 
         {/* On submit event, the form call the handleSubmit event */}
-        <Form onSubmit={this.handleSubmit}>
+        <Form onSubmit={this.handleSubmit} error={error}>
           {/* On change event, the input call haldeInputChange */}
           <input
             type="text"
