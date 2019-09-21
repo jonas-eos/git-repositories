@@ -71,6 +71,15 @@ export default class Main extends Component {
     try {
       const { newRepo, repositories } = this.state;
 
+      // Validate reposotyr already exists
+      const repositoryExists = repositories.find(
+        repository => repository.name === newRepo
+      );
+
+      if (repositoryExists) {
+        throw new Error('Repository already exists');
+      }
+
       const response = await api.get(`/repos/${newRepo}`);
 
       const data = {
